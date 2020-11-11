@@ -10,11 +10,11 @@ from flask import Flask, jsonify
 
 engine= create_engine("sqlite:///hawaii.sqlite")
 
-base = automap_base()
-base.prepare(engine, reflect=True)
+Base = automap_base()
+Base.prepare(engine, reflect=True)
 
-measurement = base.classes.measurement
-station = base.classes.station
+measurement = Base.classes.measurement
+station = Base.classes.station
 
 app = Flask(__name__)
 
