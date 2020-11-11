@@ -45,3 +45,10 @@ def precipitation():
     prcp = list(np.ravel(results))
     return jsonify(prcp)
 
+@app.route("/api/v1.0/stations")
+def stations():
+    session = Session(engine)
+    results = session.query(station.station).all()
+    return (
+
+    )
