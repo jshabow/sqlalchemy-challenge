@@ -1,5 +1,7 @@
 #Database Setup
 import numpy as np
+import datetime as dt
+from datetime import datetime
 
 import sqlalchemy
 from sqlalchemy.ext.automap import automap_base
@@ -8,9 +10,10 @@ from sqlalchemy import create_engine, func
 
 from flask import Flask, jsonify
 
-engine= create_engine("sqlite:///hawaii.sqlite")
+engine = create_engine("sqlite:///Resources/hawaii.sqlite")
 
 Base = automap_base()
+
 Base.prepare(engine, reflect=True)
 
 measurement = Base.classes.measurement
@@ -28,8 +31,8 @@ def homepage():
         f"/api/v1.0/precipitation<br/>"
         f"/api/v1.0/stations<br/>"
         f"/api/v1.0/tobs<br/>"
-        f"/api/v1.0/<start>"
-        f"/api/v1.0/<start>/<end>"
+        f"/api/v1.0/2016-08-24</br>"
+        f"/api/v1.0/2016-08-24/2017-08-24"
     )
 
 @app.route("/api/v1.0/precipitation")
@@ -45,10 +48,15 @@ def precipitation():
     prcp = list(np.ravel(results))
     return jsonify(prcp)
 
+
 @app.route("/api/v1.0/stations")
 def stations():
     session = Session(engine)
     results = session.query(station.station).all()
-    return (
+    return jsonify(results)
 
-    )
+
+
+
+if __name__ == '__main__':
+    app.run(debug=True)
