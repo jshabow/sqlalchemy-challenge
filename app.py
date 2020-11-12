@@ -55,8 +55,50 @@ def stations():
     results = session.query(station.station).all()
     return jsonify(results)
 
+@app.route("/api/v1.0/tobs")
+def tobs():
+    session = Session(engine)
+    activedata = session.query(station.station, station.name, func.count(measurement.station)).\
+        filter(measurement.station == station.station).\
+        group_by(measurement.station).\
+        order_by(func.count(measurement.station).desc()).all()
+    results = session.query(measurement.tobs, measurement.date, station.station).\
+        filter(measurement.station == activedata[0][0]).\
+        filter(measurement.date >= '2016-08-23').\
+        filter(measurement.date <='2017-08-23').all()
+    session.close()
 
+    tobs = list(np.ravel(results))
+    return jsonify(tobs)
 
+@app.route("/api/v1.0/<start>")
+def starttemp(start):
+    session = Session(engine)
+    start = session.query(func.min(measurement.tobs), func.max(measurement.tobs), func.avg(measurement.tobs)).\
+        filter(measurement.date >= '2016-08-23').all()
+    session.close()
+
+    temps = {}
+    temps['min'] = start[0][0]
+    temps['max'] = start[0][1]
+    temps['avg'] = round(start[0][2],1)
+    
+    return jsonify(temps)
+
+@app.route('/api/v1.0/<start>/<end>')
+def start_end(start, end):
+    session = Session(engine)
+    start = session.query(func.min(measurement.tobs), func.max(measurement.tobs), func.avg(measurement.tobs)).\
+        filter(measurement.date >= '2016-08-23').\
+        filter(measurement.date <= '2017-08-23').all()
+    session.close()
+    
+    temps = {}
+    temps['min'] = start[0][0]
+    temps['max'] = start[0][1]
+    temps['avg'] = round(start[0][2],1)
+    
+    return jsonify(temps)
 
 if __name__ == '__main__':
     app.run(debug=True)
